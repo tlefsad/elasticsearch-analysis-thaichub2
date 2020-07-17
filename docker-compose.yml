@@ -1,0 +1,22 @@
+version: '3'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.2
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+    ports:
+      - 9200:9200
+      - 9300:9300
+    volumes:
+      - .:/elasticsearch-analysis-thaichub2
+    command: sh -c './bin/elasticsearch-plugin install --batch file:///elasticsearch-analysis-thaichub2/target/releases/analysis-thaichub2-7.6.2.zip && exec /usr/local/bin/docker-entrypoint.sh elasticsearch'
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.6.2
+    container_name: kibana
+    depends_on:
+      - elasticsearch
+    ports:
+      - 5601:5601
+    links:
+      - elasticsearch:elasticsearch
